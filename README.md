@@ -1,9 +1,9 @@
-[![Build Status](https://travis-ci.com/VHRanger/graph2vec.svg?branch=master)](https://travis-ci.com/VHRanger/graph2vec)
+[![Build Status](https://travis-ci.com/VHRanger/nodevectors.svg?branch=master)](https://travis-ci.com/VHRanger/nodevectors)
 
 ## Quick Example:
 ```python
     import networkx as nx
-    from graph2vec import Node2Vec
+    from nodevectors import Node2Vec
 
     # Test Graph
     G = nx.generators.classic.wheel_graph(100)
@@ -17,8 +17,13 @@
     # query embeddings for node 42
     g2v.predict(42)
 
+    # Save and load whole node2vec model
+    # Uses a smart pickling method to avoid serialization errors
+    g2v.save('node2vec.pckl')
+    g2v = Node2vec.load('node2vec.pckl')
+    
     # Save model to gensim.KeyedVector format
-    g2v.save("wheel_model.bin")
+    g2v.save_vectors("wheel_model.bin")
     
     # load in gensim
     from gensim.models import KeyedVectors
@@ -28,14 +33,12 @@
 ```
 ## Installing
 
-`pip install graph2vec-learn`
-
-The pip package named `graph2vec` is not this one! It's some thing from 2015
+`pip install nodevectors`
 
 ### Usage
 
 The public methods are all exposed in the quick example. The documentation is included in the docstrings of the methods, so for instance typing `g2v.fit?` in a Jupyter Notebook will expose the documentation directly.
 
-## How does it work?
+## Why is it so fast?
 
-We transform the graph into a CSR sparse matrix, and generate the random walks directly on the CSR matrix raw data with optimized Numba JIT'ed code. After that, a Word2Vec model is trained on the random walks, as if the walks were the Word2Vec sentences.
+We leverage [CSRGraphs](https://github.com/VHRanger/CSRGraph) to do the random walks. This uses CSR graph representations and a lot of Numba usage.
